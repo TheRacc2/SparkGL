@@ -2,13 +2,12 @@
 #include <iostream>
 #include <exception>
 
-#include <GLFW/glfw3.h>
 #include <SparkGL/SparkGL.hpp>
 
 /// @brief Testing example, draws a bunch of different shapes
 int main() {
 	auto hints = [&]() {
-		//glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	};
 
@@ -26,6 +25,7 @@ int main() {
 		// rectangle with rounded corners
 		SparkGL::rect(Vec2(100, 100), Vec2(300, 150), 30, 0xFFFFFFFF);
 		
+		// triangle
 		SparkGL::triangle(Vec2(300, 300), Vec2(500, 400), Vec2(300, 500), 0x0090FF90);
 
 		// octogon

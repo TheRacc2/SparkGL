@@ -9,9 +9,7 @@ void glColorui(unsigned int col) {
 	b = col >> 8 & 0xFF;
 	a = col & 0xFF;
 
-	const float mul = 1 / 255.f;
-
-	glColor4f(r * mul, g * mul, b * mul, a * mul);
+	glColor4ub(r, g, b, a);
 }
 
 namespace SparkGL {
@@ -35,7 +33,7 @@ namespace SparkGL {
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0.0f, size.x, size.y, 0.0f, 0.0f, 1.0f);
+		glOrtho(0.f, size.x, size.y, 0.f, 0.f, 1.f);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -48,7 +46,7 @@ namespace SparkGL {
 		glfwGetFramebufferSize(window, &size.x, &size.y);
 		glViewport(0, 0, size.x, size.y);
 
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set background color to black and opaque
+		glClearColor(0.f, 0.f, 0.f, 0.f); // Set background color to black and opaque
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
@@ -62,9 +60,16 @@ namespace SparkGL {
 
 	#pragma region wrapping
 
-	void rect(const Vec2 pos, const Vec2 size, int rounding, const unsigned int color) {
+	void rect(const Vec2 pos, const Vec2 size, int rounding, const unsigned int color, const bool outline, const int thickness) {
 		if (rounding == 0) {
-			glBegin(GL_QUADS);
+			auto begin = [&]() {
+				if (outline)
+					glLineWidth(static_cast<GLfloat>(thickness)), glBegin(GL_LINE_LOOP);
+				else
+					glBegin(GL_QUADS);
+			};
+
+			begin();
 			{
 				glColorui(color);
 
@@ -77,9 +82,21 @@ namespace SparkGL {
 		}
 		else {
 			const int doubleRounding = rounding * 2;
-			rect(Vec2(pos.x, pos.y + rounding), Vec2(size.x, size.y - doubleRounding), 0, color); // middle
-			rect(Vec2(pos.x + rounding, pos.y), Vec2(size.x - doubleRounding, rounding), 0, color); // top
-			rect(Vec2(pos.x + rounding, pos.y + size.y - rounding), Vec2(size.x - doubleRounding, rounding), 0, color); // bottom
+			if (outline) {
+
+				glLineWidth(static_cast<GLfloat>(thickness));
+
+				glBegin(GL_LINE);
+				{
+					
+				}
+				glEnd();
+			}
+			else {
+				rect(Vec2(pos.x, pos.y + rounding), Vec2(size.x, size.y - doubleRounding), 0, color); // middle
+				rect(Vec2(pos.x + rounding, pos.y), Vec2(size.x - doubleRounding, rounding), 0, color); // top
+				rect(Vec2(pos.x + rounding, pos.y + size.y - rounding), Vec2(size.x - doubleRounding, rounding), 0, color); // bottom
+			}
 
 			constexpr float TO_RAD = static_cast<float>(M_PI) / 180.f;
 				
@@ -91,13 +108,22 @@ namespace SparkGL {
 			};
 
 			for (int i = 0; i < 4; i++) {
-				glBegin(GL_TRIANGLE_FAN);
+				auto begin = [&]() {
+					if (outline)
+						glLineWidth(static_cast<GLfloat>(thickness)), glBegin(GL_LINE_STRIP);
+					else
+						glBegin(GL_TRIANGLE_FAN);
+				};
+
+				begin();
 				{
 					glColorui(color);
-					glVertex2i(corners[i].x, corners[i].y); // add the corner
 
-					for (float j = 0; j <= 90; j += (90.f / rounding)) {
-						float angle = j + (90 * i);
+					if (!outline)
+						glVertex2i(corners[i].x, corners[i].y); // add the corner
+
+					for (float j = 0; j <= 90.f; j += (90.f / rounding)) {
+						float angle = j + (90.f * i);
 
 						float cos = cosf(angle * TO_RAD) * rounding;
 						float sin = sinf(angle * TO_RAD) * rounding;
@@ -120,10 +146,18 @@ namespace SparkGL {
 		}
 	}
 
-	void triangle(const Vec2 a, const Vec2 b, const Vec2 c, const unsigned int color) {
-		glBegin(GL_TRIANGLES);
+	void triangle(const Vec2 a, const Vec2 b, const Vec2 c, const unsigned int color, const bool outline, const int thickness) {
+		auto begin = [&]() {
+			if (outline)
+				glLineWidth(static_cast<GLfloat>(thickness)), glBegin(GL_LINES);
+			else
+				glBegin(GL_TRIANGLES);
+		};
+
+		begin();
 		{
 			glColorui(color);
+
 			glVertex2i(a.x, a.y);
 			glVertex2i(b.x, b.y);
 			glVertex2i(c.x, c.y);
@@ -131,14 +165,21 @@ namespace SparkGL {
 		glEnd();
 	}
 
-	void circle(const Vec2 center, const int radius, const int points, const unsigned int color) {
-		glBegin(GL_TRIANGLE_FAN);
+	void circle(const Vec2 center, const int radius, const int points, const unsigned int color, const bool outline, const int thickness) {
+		auto begin = [&]() {
+			if (outline)
+				glBegin(GL_LINE_STRIP), glLineWidth(static_cast<GLfloat>(thickness));
+			else
+				glBegin(GL_TRIANGLE_FAN);
+		};
+
+		begin();
 		{
 			glColorui(color);
 
 			constexpr float TO_RAD = static_cast<float>(M_PI) / 180.f;
 
-			for (float i = 0; i <= 360; i += (360.f / points)) {
+			for (float i = 0; i <= 360.f; i += (360.f / points)) {
 				float cos = cosf(i * TO_RAD) * radius;
 				float sin = sinf(i * TO_RAD) * radius;
 
@@ -149,9 +190,6 @@ namespace SparkGL {
 	}
 
 	void line(const Vec2 start, const Vec2 end, const int thickness, const unsigned int color) {
-		float before;
-		glGetFloatv(GL_LINE_WIDTH, &before);
-		
 		glLineWidth(static_cast<GLfloat>(thickness));
 
 		glBegin(GL_LINES);
@@ -162,8 +200,6 @@ namespace SparkGL {
 			glVertex2i(end.x, end.y);
 		}
 		glEnd();
-
-		glLineWidth(before);
 	}
 
 	#pragma endregion

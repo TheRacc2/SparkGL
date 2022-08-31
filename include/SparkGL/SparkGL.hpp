@@ -92,7 +92,7 @@ namespace SparkGL {
 	/// <param name="size">The width and height of the rectangle, in pixels</param>
 	/// <param name="rounding">The rounding value, in pixels</param>
 	/// <param name="color">Hexadecimal RGBA value (0xRRGGBBAA)</param>
-	void rect(const Vec2 pos, const Vec2 size, const int rounding, const unsigned int color);
+	void rect(const Vec2 pos, const Vec2 size, const int rounding, const unsigned int color, const bool outline = false, const int thickness = 1);
 
 	/// <summary>
 	/// Draws a simple triangle
@@ -101,7 +101,7 @@ namespace SparkGL {
 	/// <param name="b">The second point of the triangle, in pixels</param>
 	/// <param name="c">The third point of the triangle, in pixels</param>
 	/// <param name="color">Hexadecimal RGBA value (0xRRGGBBAA)</param>
-	void triangle(const Vec2 a, const Vec2 b, const Vec2 c, const unsigned int color);
+	void triangle(const Vec2 a, const Vec2 b, const Vec2 c, const unsigned int color, const bool outline = false, const int thickness = 1);
 
 	/// <summary>
 	/// Draws a simple circular polygon
@@ -110,7 +110,7 @@ namespace SparkGL {
 	/// <param name="radius">The radius of the circle, in pixels</param>
 	/// <param name="points">How many points to use for the polygon</param>
 	/// <param name="color">Hexadecimal RGBA value (0xRRGGBBAA)</param>
-	void circle(const Vec2 center, const int radius, const int points, const unsigned int color);
+	void circle(const Vec2 center, const int radius, const int points, const unsigned int color, const bool outline = false, const int thickness = 1);
 
 	/// <summary>
 	/// Draws a simple line
