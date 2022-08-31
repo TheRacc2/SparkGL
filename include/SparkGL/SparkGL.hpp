@@ -65,9 +65,9 @@ namespace SparkGL {
 	/// <summary>
 	/// Attempts to initialize the SparkGL library
 	/// </summary>
-	/// <param name="size">the size of the window to be created</param>
-	/// <param name="title">the window title</param>
-	/// <param name="hintWindow">a lambda containing additional window hints</param>
+	/// <param name="size">The size of the window to be created</param>
+	/// <param name="title">The window title</param>
+	/// <param name="hintWindow">A lambda containing additional window hints</param>
 	/// <returns>`true` on success or `false` on failure</returns>
 	bool init(const Vec2 size, const char* title, std::function<void()> hintWindow = [&]{ });
 
