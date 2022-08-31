@@ -15,6 +15,12 @@ SparkGL uses GLFW and OpenGL. On windows, link against both `OpenGL32.lib` and `
 
 The static GLFW library can be used. Read more about this [here.](https://www.glfw.org/docs/3.3/build_guide.html#build_link)
 
+# Examples
+SparkGL was designed with ease-of-use and code readability in mind. the [example projects](https://github.com/TheRacc2/SparkGL/tree/main/example)
+showcase how easy it is to setup SparkGL out-of-the-box.
+
+The most minimal example can be found [here.](https://github.com/TheRacc2/SparkGL/tree/main/example/minimal.cpp)
+
 # Issues / Contributions
 The code is written by myself and myself alone.
 I have not taken a trigonometry or geometry class, so the algorithm used to draw circles and other polygons is more than likely very outdated.
