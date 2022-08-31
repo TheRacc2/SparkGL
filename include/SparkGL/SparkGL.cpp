@@ -1,7 +1,5 @@
 #include "SparkGL.hpp"
 
-
-
 void glColorui(unsigned int col) {
 	int r, g, b, a;
 	r = col >> 24 & 0xFF;
@@ -21,6 +19,7 @@ namespace SparkGL {
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+		//glfwWindowHint(GLFW_SAMPLES, 2);
 
 		hintWindow();
 
@@ -34,6 +33,12 @@ namespace SparkGL {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0.f, size.x, size.y, 0.f, 0.f, 1.f);
+
+		//glEnable(GL_LINE_SMOOTH);
+		//glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+
+		//glEnable(GL_POLYGON_SMOOTH);
+		//glHint(GL_POLYGON_SMOOTH_HINT, GL_DONT_CARE);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -62,7 +67,7 @@ namespace SparkGL {
 
 	void rect(const Vec2 pos, const Vec2 size, int rounding, const unsigned int color, const bool outline, const int thickness) {
 		if (rounding == 0) {
-			auto begin = [&]() {
+			const static auto begin = [&]() {
 				if (outline)
 					glLineWidth(static_cast<GLfloat>(thickness)), glBegin(GL_LINE_LOOP);
 				else
@@ -83,12 +88,41 @@ namespace SparkGL {
 		else {
 			const int doubleRounding = rounding * 2;
 			if (outline) {
-
 				glLineWidth(static_cast<GLfloat>(thickness));
 
-				glBegin(GL_LINE);
+				glBegin(GL_LINES); // left side
 				{
-					
+					glColorui(color);
+
+					glVertex2i(pos.x, pos.y + rounding);
+					glVertex2i(pos.x, pos.y + size.y - rounding);
+				}
+				glEnd();
+
+				glBegin(GL_LINES); // right side
+				{
+					glColorui(color);
+
+					glVertex2i(pos.x + size.x, pos.y + rounding);
+					glVertex2i(pos.x + size.x, pos.y + size.y - rounding);
+				}
+				glEnd();
+
+				glBegin(GL_LINES); // top
+				{
+					glColorui(color);
+
+					glVertex2i(pos.x + rounding, pos.y);
+					glVertex2i(pos.x + size.x - rounding, pos.y);
+				}
+				glEnd();
+
+				glBegin(GL_LINES); // bottom
+				{
+					glColorui(color);
+
+					glVertex2i(pos.x + rounding, pos.y + size.y);
+					glVertex2i(pos.x + size.x - rounding, pos.y + size.y);
 				}
 				glEnd();
 			}
@@ -100,6 +134,9 @@ namespace SparkGL {
 
 			constexpr float TO_RAD = static_cast<float>(M_PI) / 180.f;
 				
+			int h[2];
+			glGetIntegerv(GL_LINE_WIDTH_RANGE, h);
+
 			Vec2 corners[4] = {
 				Vec2(pos.x + rounding, pos.y + rounding), // top left
 				Vec2(pos.x + size.x - rounding, pos.y + rounding), // top right
@@ -108,7 +145,7 @@ namespace SparkGL {
 			};
 
 			for (int i = 0; i < 4; i++) {
-				auto begin = [&]() {
+				const static auto begin = [&]() {
 					if (outline)
 						glLineWidth(static_cast<GLfloat>(thickness)), glBegin(GL_LINE_STRIP);
 					else
@@ -128,6 +165,7 @@ namespace SparkGL {
 						float cos = cosf(angle * TO_RAD) * rounding;
 						float sin = sinf(angle * TO_RAD) * rounding;
 						
+
 						// we have to use glVertex2f instead of glVertex2i due to floating-point imprecision 
 						glVertex2f(corners[i].x - cos, corners[i].y - sin);
 					}
@@ -147,7 +185,7 @@ namespace SparkGL {
 	}
 
 	void triangle(const Vec2 a, const Vec2 b, const Vec2 c, const unsigned int color, const bool outline, const int thickness) {
-		auto begin = [&]() {
+		const static auto begin = [&]() {
 			if (outline)
 				glLineWidth(static_cast<GLfloat>(thickness)), glBegin(GL_LINES);
 			else
@@ -166,9 +204,9 @@ namespace SparkGL {
 	}
 
 	void circle(const Vec2 center, const int radius, const int points, const unsigned int color, const bool outline, const int thickness) {
-		auto begin = [&]() {
+		const static auto begin = [&]() {
 			if (outline)
-				glBegin(GL_LINE_STRIP), glLineWidth(static_cast<GLfloat>(thickness));
+				glLineWidth(static_cast<GLfloat>(thickness)), glBegin(GL_LINE_STRIP);
 			else
 				glBegin(GL_TRIANGLE_FAN);
 		};

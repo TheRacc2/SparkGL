@@ -23,7 +23,7 @@ int main() {
 		SparkGL::rect(Vec2(500, 100), Vec2(300, 150), 0, 0xFF000080);
 
 		// rectangle with rounded corners
-		SparkGL::rect(Vec2(100, 100), Vec2(300, 150), 30, 0xFFFFFFFF);
+		SparkGL::rect(Vec2(100, 100), Vec2(300, 150), 30, 0xFFFFFFFF, true, 10);
 		
 		// triangle
 		SparkGL::triangle(Vec2(300, 300), Vec2(500, 400), Vec2(300, 500), 0x0090FF90);
@@ -36,6 +36,10 @@ int main() {
 
 		// thick line
 		SparkGL::line(Vec2(1000, 400), Vec2(800, 600), 4, 0xFFFF00FF);
+
+		// blending test
+		SparkGL::rect(Vec2(1100, 500), Vec2(100, 100), 0, 0xFF000080);
+		SparkGL::rect(Vec2(1150, 450), Vec2(100, 100), 0, 0x0000FF80);
 
 		SparkGL::end();
 	}
