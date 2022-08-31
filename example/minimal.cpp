@@ -1,4 +1,3 @@
-#define SPARKGL_INCLUDE_GLFW
 #include <SparkGL/SparkGL.hpp>
 
 int main() {

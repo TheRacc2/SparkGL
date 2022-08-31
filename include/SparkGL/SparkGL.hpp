@@ -7,8 +7,8 @@
 #include <optional>
 #include <functional>
 
-#ifdef SPARKGL_INCLUDE_GLFW // custom flag to include glfw
-#include <GLFW/glfw3.h>
+#ifndef SPARKGL_NO_INCLUDE // flag to prevent GLFW from being included
+	#include <GLFW/glfw3.h>
 #endif
 
 struct Vec2 {
