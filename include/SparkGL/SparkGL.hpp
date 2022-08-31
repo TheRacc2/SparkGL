@@ -7,7 +7,7 @@
 #include <optional>
 #include <functional>
 
-#ifndef _glfw3_h_ // is GLFW included?
+#ifdef SPARKGL_INCLUDE_GLFW // custom flag to include glfw
 #include <GLFW/glfw3.h>
 #endif
 
